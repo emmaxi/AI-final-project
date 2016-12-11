@@ -33,8 +33,9 @@ def DecisionTreeClean():
     frame = frame[frame.income != "?"]
     labels = ["{0} - {1}".format(i, i + 9) for i in range(0, 100, 10)]
 
-    frame['agegroup'] = pd.cut(frame.age, range(0, 105, 10), right=False, labels=labels)
+    frame['capitalgain'] = pd.cut(frame.age, range(0, 105, 10), right=False, labels=labels)
 
-    frame['hoursgroup'] = pd.cut(frame.hoursperweek, range(0, 105, 10), right=False, labels=labels)
+    frame['capitalloss'] = pd.cut(frame.hoursperweek, range(0, 105, 10), right=False, labels=labels)
 
     frame.to_csv("AdultCensus_cleaned.csv")
+DecisionTreeClean()

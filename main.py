@@ -14,20 +14,15 @@ def main():
 	data = [[]]
 	for line in file:
 		line = line.strip("\r\n")
-		data.append(line.split(','))
+		data.append(line.split(',')[1:])
 	data.remove([])
 	attributes = data[0]
 	data.remove(attributes)
-	#Run ID3
-	tree = DecisionTree.makeTree(data, attributes, target, 0)
+	trainingdata = data[0:(len(data)* 19 /20)]
+	tree = DecisionTree.makeTree(trainingdata, attributes, target, 0)
 	print "generated decision tree"
 
-	testdata = [[]]
-	f = open('AdultTest.csv')
-	for line in f:
-		line = line.strip("\r\n")
-		testdata.append(line.split(','))
-	testdata.remove([])
+	testdata = data[(len(data)* 19 /20):]
 	count = 0
 	rightCount = 0.0
 	for entry in testdata:
