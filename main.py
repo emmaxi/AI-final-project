@@ -137,6 +137,7 @@ def associationAnalysis():
 	targetItem1 = 'income:<=50K'
 	targetItem2 = 'income:>50K'
   	
+  	print('Using FP-Growth algorithm to find the frequent pattern in given census:')
 	fpTreeBuilder = FPTreeBuilder.FPTreeBuilder(formedTransactions, min_sup, counts, headerTable)
 	FPTreeMiner.FPTreeMiner(targetItem1, targetItem2, fpTreeBuilder.tree, min_sup, headerTable)
 
@@ -144,4 +145,5 @@ def associationAnalysis():
 
 if __name__ == '__main__':
     predicitions()
+    associationAnalysis()
 
