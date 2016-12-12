@@ -1,6 +1,6 @@
 import DecisionTree
 import Node
-<<<<<<< HEAD
+
 import SVM
 from numpy import *
 
@@ -136,7 +136,7 @@ def main():
     print 'The classify accuracy is: %.3f%%' % (accuracy * 100)
 #    SVM.showSVM(svmClassifier)
 
-=======
+
 import FPTreeBuilder
 import FPTreeMiner
 
@@ -186,7 +186,7 @@ def main():
 
 		print ("entry%s = %s" % (count, result))
 	print rightCount / count
->>>>>>> origin/master
+
 
 def associationAnalysis():
 	transactions = [[]]
@@ -222,9 +222,5 @@ def associationAnalysis():
 
 
 if __name__ == '__main__':
-<<<<<<< HEAD
     main()
-=======
-	main()
-	associationAnalysis()
->>>>>>> origin/master
+
