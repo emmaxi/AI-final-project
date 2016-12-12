@@ -171,7 +171,6 @@ def predictions(testdata, tree, attributes):
             index = attributes.index(root.value)
             value = entry[index]
             if (value in tempDict.keys()):
-                child = Node.Node(value, tempDict[value])
                 result = tempDict[value]
                 tempDict = tempDict[value]
             else:
@@ -183,14 +182,12 @@ def predictions(testdata, tree, attributes):
 
 def readCVS(url):
     file = open(url)
-    data = [[]]
+    data = []
     for line in file:
         line = line.strip("\r\n")
         data.append(line.split(',')[1:])
-    data.remove([])
     attributes = data[0]
-    data.remove(attributes)
-    return data, attributes
+    return data[1:], attributes
 
 def splitData(data, trainNum,testNum):
     return data[0:trainNum],data[trainNum + 1: trainNum + testNum]
