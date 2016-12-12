@@ -37,5 +37,22 @@ def DecisionTreeClean():
 
     frame['capitalloss'] = pd.cut(frame.hoursperweek, range(0, 105, 10), right=False, labels=labels)
 
+    frame.columns = ["age",
+                     "workclass",
+                     "education",
+                     "educationnum",
+                     "maritalstatus",
+                     "occupation",
+                     "relationship",
+                     "race",
+                     "sex",
+                     "agegroup",
+                     "hoursgroup",
+                     "hoursperweek",
+                     "nativecountry",
+                     "income"]
+    del frame['age']
+    del frame['hoursperweek']
+
     frame.to_csv("AdultCensus_cleaned.csv")
 DecisionTreeClean()
