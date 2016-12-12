@@ -1,63 +1,25 @@
 import DecisionTree
 import Node
-
-import SVM
+import NaiveBayes
+#import SVM
 from numpy import *
 
 def main():
 
-    #Insert input file
     """
-    IMPORTANT: Change this file path to change training data
+    Decision Tree:
     """
-    file = open('AdultCensus_cleaned.csv')
-    """
-    IMPORTANT: Change this variable too change target attribute
-    """
-    target = 'income'
-    data = [[]]
-    for line in file:
-        line = line.strip("\r\n")
-        data.append(line.split(','))
-    data.remove([])
-    attributes = data[0]
-    data.remove(attributes)
-    #Run ID3
-    tree = DecisionTree.makeTree(data, attributes, target, 0)
+    data, attributes = DecisionTree.readCVS('AdultCensus_cleaned.csv')
+    trainingdata, testdata = DecisionTree.splitData(data, 28000, 2000)
+    tree = DecisionTree.makeTree(trainingdata, attributes, 'income', 0)
     print "generated decision tree"
-
-    testdata = [[]]
-    f = open('AdultTest.csv')
-    for line in f:
-        line = line.strip("\r\n")
-        testdata.append(line.split(','))
-    testdata.remove([])
-    count = 0
-    rightCount = 0.0
-    for entry in testdata:
-        count += 1
-        tempDict = tree.copy()
-        result = ""
-        while (isinstance(tempDict, dict)):
-            root = Node.Node(tempDict.keys()[0], tempDict[tempDict.keys()[0]])
-            tempDict = tempDict[tempDict.keys()[0]]
-            index = attributes.index(root.value)
-            value = entry[index]
-            if (value in tempDict.keys()):
-                child = Node.Node(value, tempDict[value])
-                result = tempDict[value]
-                tempDict = tempDict[value]
-            else:
-                print "can't process input %s" % count
-                result = "?"
-                break
-        if result == entry[-1]:
-            rightCount += 1
-
-        print ("entry%s = %s" % (count, result))
-    print rightCount / count
+    DecisionTree.predictions(testdata, tree, attributes)
+    table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned.csv', 'income', 28000, 2000)
+    print "generate naive bayes table"
+    NaiveBayes.predictions(table, testData, decisions)
 
 
+"""
     # SVM learning
     print "generated SVM"
 
@@ -135,57 +97,10 @@ def main():
     print "step 4: show the result..."
     print 'The classify accuracy is: %.3f%%' % (accuracy * 100)
 #    SVM.showSVM(svmClassifier)
-
+"""
 
 import FPTreeBuilder
 import FPTreeMiner
-
-def main():
-	#Insert input file
-	"""
-	IMPORTANT: Change this file path to change training data
-	"""
-	file = open('AdultCensus_cleaned.csv')
-	"""
-	IMPORTANT: Change this variable too change target attribute
-	"""
-	target = 'income'
-	data = [[]]
-	for line in file:
-		line = line.strip("\r\n")
-		data.append(line.split(',')[1:])
-	data.remove([])
-	attributes = data[0]
-	data.remove(attributes)
-	trainingdata = data[0:(len(data)* 19 /20)]
-	tree = DecisionTree.makeTree(trainingdata, attributes, target, 0)
-	print "generated decision tree"
-
-	testdata = data[(len(data)* 19 /20):]
-	count = 0
-	rightCount = 0.0
-	for entry in testdata:
-		count += 1
-		tempDict = tree.copy()
-		result = ""
-		while (isinstance(tempDict, dict)):
-			root = Node.Node(tempDict.keys()[0], tempDict[tempDict.keys()[0]])
-			tempDict = tempDict[tempDict.keys()[0]]
-			index = attributes.index(root.value)
-			value = entry[index]
-			if (value in tempDict.keys()):
-				child = Node.Node(value, tempDict[value])
-				result = tempDict[value]
-				tempDict = tempDict[value]
-			else:
-				print "can't process input %s" % count
-				result = "?"
-				break
-		if result == entry[-1]:
-			rightCount += 1
-
-		print ("entry%s = %s" % (count, result))
-	print rightCount / count
 
 
 def associationAnalysis():

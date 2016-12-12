@@ -1,6 +1,9 @@
 import math
 
 #find item in a list
+import Node
+
+
 def find(item, list):
     for i in list:
         if item(i): 
@@ -154,4 +157,44 @@ def makeTree(data, attributes, target, recursion):
             tree[best][val] = subtree
     
     return tree
+
+def predictions(testdata, tree, attributes):
+    count = 0
+    rightCount = 0.0
+    for entry in testdata:
+        count += 1
+        tempDict = tree.copy()
+        result = ""
+        while (isinstance(tempDict, dict)):
+            root = Node.Node(tempDict.keys()[0], tempDict[tempDict.keys()[0]])
+            tempDict = tempDict[tempDict.keys()[0]]
+            index = attributes.index(root.value)
+            value = entry[index]
+            if (value in tempDict.keys()):
+                child = Node.Node(value, tempDict[value])
+                result = tempDict[value]
+                tempDict = tempDict[value]
+            else:
+                print "can't process input %s" % count
+                result = "?"
+                break
+        if result == entry[-1]:
+            rightCount += 1
+
+        print ("entry%s = %s" % (count, result))
+    print rightCount / count
+
+def readCVS(url):
+    file = open(url)
+    data = [[]]
+    for line in file:
+        line = line.strip("\r\n")
+        data.append(line.split(',')[1:])
+    data.remove([])
+    attributes = data[0]
+    data.remove(attributes)
+    return data, attributes
+
+def splitData(data, trainNum,testNum):
+    return data[0:trainNum],data[trainNum + 1: trainNum + testNum]
 
