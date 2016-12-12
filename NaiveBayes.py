@@ -46,8 +46,6 @@ def predictions(table, testData, decisions):
         if argMax(decisionTable) == row[testData.columns.values[-1]]:
             rightcount += 1.0
 
-
-        print index, decisionTable
     print rightcount/totalcount
 
 

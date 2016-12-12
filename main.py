@@ -4,19 +4,25 @@ import NaiveBayes
 #import SVM
 from numpy import *
 
-def main():
+TrainingDataNum = 28000
+TestDataNum = 2000
+Target = 'income'
+def predicitions():
 
     """
     Decision Tree:
     """
     data, attributes = DecisionTree.readCVS('AdultCensus_cleaned.csv')
-    trainingdata, testdata = DecisionTree.splitData(data, 28000, 2000)
-    tree = DecisionTree.makeTree(trainingdata, attributes, 'income', 0)
+    trainingdata, testdata = DecisionTree.splitData(data, TrainingDataNum, TestDataNum)
+    tree = DecisionTree.makeTree(trainingdata, attributes, Target, 0)
     print "generated decision tree"
     DecisionTree.predictions(testdata, tree, attributes)
-    table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned.csv', 'income', 28000, 2000)
+
+    table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned.csv', Target, TrainingDataNum, TestDataNum)
     print "generate naive bayes table"
     NaiveBayes.predictions(table, testData, decisions)
+
+
 
 
 """
@@ -137,5 +143,5 @@ def associationAnalysis():
 
 
 if __name__ == '__main__':
-    main()
+    predicitions()
 

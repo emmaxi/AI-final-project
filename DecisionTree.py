@@ -175,13 +175,10 @@ def predictions(testdata, tree, attributes):
                 result = tempDict[value]
                 tempDict = tempDict[value]
             else:
-                print "can't process input %s" % count
                 result = "?"
                 break
         if result == entry[-1]:
             rightCount += 1
-
-        print ("entry%s = %s" % (count, result))
     print rightCount / count
 
 def readCVS(url):
