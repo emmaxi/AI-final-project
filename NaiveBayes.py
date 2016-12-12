@@ -63,7 +63,7 @@ def argMax(dct):
 
 
 
-table , decisions, testData = training('AdultCensus_cleaned.csv', 'income', 25000, 5000)
+table , decisions, testData = training('AdultCensus_cleaned.csv', 'income', 28000, 2000)
 
 predictions(table, testData, decisions)
 
