@@ -2,9 +2,12 @@ import FPTreeBuilder
 import copy
 
 class FPTreeMiner(object):
-    def __init__(self, TreeGrowth=None, min_sup=-1, headerTable={}):
+    def __init__(self, targetItem1, targetItem2, TreeGrowth, min_sup, headerTable):
         self.min_sup = min_sup
+        self.targetItem1 = targetItem1
+        self.targetItem2 = targetItem2
         self.treeMining(TreeGrowth=TreeGrowth, headerTable=headerTable)
+        
     
     """
     Recursively mining the frequent itemsets in FP-Tree.
@@ -45,11 +48,13 @@ class FPTreeMiner(object):
         else:
             # only one path in the tree
             frequentSet = self.getFrequentSet(allNodesOnPath, alpha)
-            #print the result
+            #print the result   
             for fItem in frequentSet:
                 index = len(fItem) - 1
                 items = fItem[0:index] 
-                print tuple(items),':',fItem[index]
+                if self.targetItem1 in items or self.targetItem2 in items:
+                    if len(items) >= 3:
+                        print tuple(items),':',fItem[index]
         return 
     
     # get pattern base of an item by searching header table
