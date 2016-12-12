@@ -237,3 +237,72 @@ def testSVM(svm, test_x, test_y):
     return accuracy
 
 
+def classify():
+    # SVM learning
+    ## step 1: load data
+    print "step 1: load data..."
+    dataSet = []
+    labels = []
+    fileIn = open('AdultCensus_cleaned SVM.csv')
+    for line in fileIn.readlines():
+        lineArr = line.strip().split('\t')
+        feature = []
+        feature.extend([float(lineArr[0][0]), float(lineArr[0][2])])
+        if (lineArr[0][5] == "," ):
+            feature.extend([float(lineArr[0][4])])
+            feature.extend([float(lineArr[0][6])])
+            if (lineArr[0][9] == "," ):
+                feature.extend([float(lineArr[0][8])])
+                feature.extend([float(lineArr[0][10]),float(lineArr[0][12]),
+                               float(lineArr[0][14]),float(lineArr[0][16]),
+                               float(lineArr[0][18]),float(lineArr[0][20])])
+                dataSet.append(feature)
+                labels.append(float(lineArr[0][22]))
+            else:
+                feature.extend([float(lineArr[0][8]) * 10 +
+                                float(lineArr[0][9])])
+                feature.extend([float(lineArr[0][11]),float(lineArr[0][13]),
+                               float(lineArr[0][15]),float(lineArr[0][17]),
+                               float(lineArr[0][19]),float(lineArr[0][21])])
+                dataSet.append(feature)
+                labels.append(float(lineArr[0][23]))
+        else :
+            feature.extend([float(lineArr[0][4]) * 10 + float(lineArr[0][5])])
+            feature.extend([float(lineArr[0][7])])
+            if (lineArr[0][10] == "," ):
+                feature.extend([float(lineArr[0][9])])
+                feature.extend([float(lineArr[0][11]),float(lineArr[0][13]),
+                               float(lineArr[0][15]),float(lineArr[0][17]),
+                               float(lineArr[0][19]),float(lineArr[0][21])])
+                dataSet.append(feature)
+                labels.append(float(lineArr[0][23]))
+            else:
+                feature.extend([float(lineArr[0][9]) * 10 +
+                                float(lineArr[0][10])])
+                feature.extend([float(lineArr[0][12]),float(lineArr[0][14]),
+                               float(lineArr[0][16]),float(lineArr[0][18]),
+                               float(lineArr[0][20]),float(lineArr[0][22])])
+                dataSet.append(feature)
+                labels.append(float(lineArr[0][24]))
+    dataSet = mat(dataSet)
+    labels = mat(labels).T
+    train_x = dataSet[:10000, :]
+    train_y = labels[:10000, :]
+    test_x = dataSet[10100:10200, :]
+    test_y = labels[10100:10200, :]
+    print  dataSet[:10000, :]
+    print  labels[:10000, :]
+    ## step 2: training...
+    print "step 2: training..."
+    C = 0.6
+    toler = 0.1
+    maxIter = 5
+    svmClassifier = trainSVM(train_x, train_y, C, toler, maxIter, kernelOption=('linear', 0))
+    ## step 3: testing
+    print "step 3: testing..."
+    accuracy = testSVM(svmClassifier, test_x, test_y)
+    ## step 4: show the result
+    print "step 4: show the result..."
+    print 'The classify accuracy is: %.3f%%' % (accuracy * 100)
+
+
