@@ -6,11 +6,15 @@ import math
 import pandas as pd
 from pandas import DataFrame, Series
 
-def training(url, target):
-    data = pd.read_csv(url)
+def training(url, target, num, testNum):
+    data = pd.read_csv(url, nrows = num)
+
+    testData = pd.read_csv(url, skiprows = num, nrows=num + 1 + testNum)
+    testFrame = DataFrame(testData)
     frame = DataFrame(data)
+    testFrame.columns = frame.columns
     table = probabilityTable(frame, target)
-    return table, frame.income.unique()
+    return table, frame.income.unique(), testFrame
 
 
 
@@ -35,14 +39,13 @@ def predictions(table, testData, decisions):
             for c in testData.columns.values[1:-1]:
                 try:
                     value += math.log(table[c][d][row[c]],10)
+
                 except KeyError:
                     break
             decisionTable[d] = value
         if argMax(decisionTable) == row[testData.columns.values[-1]]:
             rightcount += 1.0
 
-
-        print index, decisionTable
     print rightcount/totalcount
 
 
@@ -56,12 +59,5 @@ def argMax(dct):
     maxIndex = values.index(max(values))
     return all[maxIndex][0]
 
-
-
-table , decisions = training('AdultCensus_cleaned.csv', 'income')
-
-data = pd.read_csv('AdultTest.csv')
-testData = DataFrame(data)
-predictions(table, testData, decisions)
 
 
