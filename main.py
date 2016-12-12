@@ -52,21 +52,33 @@ def main():
 
 def associationAnalysis():
 	transactions = [[]]
-	with open('AdultCensus_cleaned.csv') as file:
-		# skipped the header
-	    next(file)
-	    for line in file:
-	    	line = line.strip("\r\n")
-	    	transactions.append(line.split(',')[1:])
+	formedTransactions = [[]]
+	
+	# customized training data
+	file = open('AdultCensus_cleaned.csv')	
+ 	for line in file:
+ 	  	line = line.strip("\r\n")
+ 	  	transactions.append(line.split(',')[1:])
+ 	transactions.remove([])
+ 	headerList = transactions[0]
+	for transaction in transactions:
+		trans = []
+		for i in range(len(transaction)):
+			item = transaction[i]
+			attributeName = headerList[i]
+			trans.append(attributeName + ':' + item)
+		formedTransactions.append(trans)
+	formedTransactions = formedTransactions[2:]
+				
 	# since we got approximate 30,000 transaction, min support num can't be two small
 	min_sup = 150
 	headerTable = {}
 	counts = []
-	
-	targetItem1 = '<=50K'
-	targetItem2 = '>50K'
-	
-	fpTreeBuilder = FPTreeBuilder.FPTreeBuilder(transactions, min_sup, counts, headerTable)
+  	
+	targetItem1 = 'income:<=50K'
+	targetItem2 = 'income:>50K'
+  	
+	fpTreeBuilder = FPTreeBuilder.FPTreeBuilder(formedTransactions, min_sup, counts, headerTable)
 	FPTreeMiner.FPTreeMiner(targetItem1, targetItem2, fpTreeBuilder.tree, min_sup, headerTable)
 
 
