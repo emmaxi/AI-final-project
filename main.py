@@ -28,7 +28,8 @@ def predicitions():
 
 import FPTreeBuilder
 import FPTreeMiner
-
+import time
+from apyori import apriori
 
 def associationAnalysis():
     transactions = [[]]
@@ -58,9 +59,16 @@ def associationAnalysis():
     targetItem1 = 'income:<=50K'
     targetItem2 = 'income:>50K'
 
-    print('Using FP-Growth algorithm to find the frequent pattern in given census:')
+    print('Using FP-Growth algorithm to find the frequent pattern in given census:(min_sup is 150 by default)')
+    start_timeFP = time.time()
     fpTreeBuilder = FPTreeBuilder.FPTreeBuilder(formedTransactions, min_sup, counts, headerTable)
     FPTreeMiner.FPTreeMiner(targetItem1, targetItem2, fpTreeBuilder.tree, min_sup, headerTable)
+    print("---FP-Growth using %s seconds ---" % (time.time() - start_timeFP))
+    
+    print('Using Apriori library to find the frequent pattern in given census:')
+    start_timeA = time.time()
+    aprioriResults = list(apriori(formedTransactions))
+    print("---Apriori using %s seconds ---" % (time.time() - start_timeA))
 
 
 if __name__ == '__main__':
