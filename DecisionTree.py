@@ -1,191 +1,94 @@
 import math
+from collections import Counter
 
-#find item in a list
-import Node
+def argMax(dct):
+    if len(dct.keys()) == 0: return None
+    all = dct.items()
+    values = [x[1] for x in all]
+    maxIndex = values.index(max(values))
+    return all[maxIndex][0]
 
+def countData(attributes,data,goalAttr):
+    index = attributes.index(goalAttr)
+    targetVaulues = [line[index] for line in data]
+    return Counter(targetVaulues)
 
-def find(item, list):
-    for i in list:
-        if item(i): 
-            return True
-        else:
-            return False
-
-#find most common value for an attribute
-def majority(attributes, data, target):
-    #find target attribute
-    valFreq = {}
-    #find target in data
-    index = attributes.index(target)
-    #calculate frequency of values in target attr
-    for tuple in data:
-        if (valFreq.has_key(tuple[index])):
-            valFreq[tuple[index]] += 1 
-        else:
-            valFreq[tuple[index]] = 1
-    max = 0
-    major = ""
-    for key in valFreq.keys():
-        if valFreq[key]>max:
-            max = valFreq[key]
-            major = key
-    return major
-
-#Calculates the entropy of the given data set for the target attr
-def entropy(attributes, data, targetAttr):
-
-    valFreq = {}
-    dataEntropy = 0.0
-    
-    #find index of the target attribute
-    i = 0
-    for entry in attributes:
-        if (targetAttr == entry):
-            break
-        ++i
-    
-    # Calculate the frequency of each of the values in the target attr
-    for entry in data:
-        if (valFreq.has_key(entry[i])):
-            valFreq[entry[i]] += 1.0
-        else:
-            valFreq[entry[i]]  = 1.0
-
-    # Calculate the entropy of the data for the target attr
-    for freq in valFreq.values():
-        dataEntropy += (-freq/len(data)) * math.log(freq/len(data), 2) 
-        
+def entropy(attributes, data, goalAttr):
+    c = countData(attributes,data,goalAttr)
+    dataEntropy = sum([(-freq/len(data)) * math.log(float(freq)/len(data), 2) for freq in c.values()])
     return dataEntropy
 
 def gain(attributes, data, attr, targetAttr):
-    """
-    Calculates the information gain (reduction in entropy) that would
-    result by splitting the data on the chosen attribute (attr).
-    """
-    valFreq = {}
+    c = countData(attributes, data, attr)
     subsetEntropy = 0.0
-    
-    #find index of the attribute
-    i = attributes.index(attr)
+    index = attributes.index(attr)
+    for val in c.keys():
+        dataSubset = [entry for entry in data if entry[index] == val]
+        subsetEntropy += (c[val] / sum(c.values())) * entropy(attributes + [targetAttr], dataSubset, targetAttr)
+    return entropy(attributes + [targetAttr], data, targetAttr) - subsetEntropy
 
-    # Calculate the frequency of each of the values in the target attribute
-    for entry in data:
-        if (valFreq.has_key(entry[i])):
-            valFreq[entry[i]] += 1.0
-        else:
-            valFreq[entry[i]]  = 1.0
-    # Calculate the sum of the entropy for each subset of records weighted
-    # by their probability of occuring in the training set.
-    for val in valFreq.keys():
-        valProb        = valFreq[val] / sum(valFreq.values())
-        dataSubset     = [entry for entry in data if entry[i] == val]
-        subsetEntropy += valProb * entropy(attributes, dataSubset, targetAttr)
+def getNextAttr(data, attributes, goalAttr):
+    d = dict()
+    for a in attributes:
+        d[a] = gain(attributes, data, a, goalAttr)
+    return argMax(d)
 
-    # Subtract the entropy of the chosen attribute from the entropy of the
-    # whole data set with respect to the target attribute (and return it)
-    return (entropy(attributes, data, targetAttr) - subsetEntropy)
-
-#choose best attibute 
-def chooseAttr(data, attributes, target):
-    best = attributes[0]
-    maxGain = 0;
-    for attr in attributes:
-        newGain = gain(attributes, data, attr, target) 
-        if newGain>maxGain:
-            maxGain = newGain
-            best = attr
-    return best
-
-#get values in the column of the given attribute 
 def getValues(data, attributes, attr):
     index = attributes.index(attr)
     values = []
-    for entry in data:
-        if entry[index] not in values:
-            values.append(entry[index])
+    for line in data:
+        if line[index] not in values:
+            values.append(line[index])
     return values
 
-def getExamples(data, attributes, best, val):
-    examples = [[]]
+def getSubtreeContent(data, attributes, best, val):
+    content = list()
     index = attributes.index(best)
-    for entry in data:
-        #find entries with the give value
-        if (entry[index] == val):
-            newEntry = []
-            #add value if it is not in best column
-            for i in range(0,len(entry)):
-                if(i != index):
-                    newEntry.append(entry[i])
-            examples.append(newEntry)
-    examples.remove([])
-    return examples
+    for line in data:
+        if line[index] == val:
+            line = line[0:index] + line[index+1:]
+            content.append(line)
+    return content
 
-def makeTree(data, attributes, target, recursion):
-    recursion += 1
-    #Returns a new decision tree based on the examples given.
-    data = data[:]
-    vals = [record[attributes.index(target)] for record in data]
-    default = majority(attributes, data, target)
-
-    # If the dataset is empty or the attributes list is empty, return the
-    # default value. When checking the attributes list for emptiness, we
-    # need to subtract 1 to account for the target attribute.
-    if not data or (len(attributes) - 1) <= 0:
+def init(data, targetAttr, attributes):
+    vals = [record[attributes.index(targetAttr)] for record in data]
+    c = countData(attributes, data, targetAttr)
+    default = max(c, key=lambda k: c[k])
+    if len(attributes) <= 1 or not data:
         return default
-    # If all the records in the dataset have the same classification,
-    # return that classification.
-    elif vals.count(vals[0]) == len(vals):
+    if vals.count(vals[0]) == len(vals):
         return vals[0]
-    else:
-        # Choose the next best attribute to best classify our data
-        best = chooseAttr(data, attributes, target)
-        # Create a new decision tree/node with the best attribute and an empty
-        # dictionary object--we'll fill that up next.
-        tree = {best:{}}
-    
-        # Create a new decision tree/sub-node for each of the values in the
-        # best attribute field
-        for val in getValues(data, attributes, best):
-            # Create a subtree for the current value under the "best" field
-            examples = getExamples(data, attributes, best, val)
-            newAttr = attributes[:]
-            newAttr.remove(best)
-            subtree = makeTree(examples, newAttr, target, recursion)
-    
-            # Add the new subtree to the empty dictionary object in our new
-            # tree/node we just created.
-            tree[best][val] = subtree
-    
-    return tree
+
+    next = getNextAttr(data, attributes[:-1], targetAttr)
+    initialtree = dict()
+    initialtree[next] = dict()
+    for val in getValues(data, attributes, next):
+        content = getSubtreeContent(data, attributes, next, val)
+        newAttr = attributes[:]
+        newAttr.remove(next)
+        initialtree[next][val] = init(content, targetAttr, newAttr)
+    return initialtree
 
 def predictions(testdata, tree, attributes):
-    count = 0
     rightCount = 0.0
-    for entry in testdata:
-        count += 1
-        tempDict = tree.copy()
-        result = ""
-        while (isinstance(tempDict, dict)):
-            root = Node.Node(tempDict.keys()[0], tempDict[tempDict.keys()[0]])
-            tempDict = tempDict[tempDict.keys()[0]]
-            index = attributes.index(root.value)
-            value = entry[index]
-            if (value in tempDict.keys()):
-                result = tempDict[value]
-                tempDict = tempDict[value]
+    for line in testdata:
+        result = tree.copy()
+        while type(result) == type(dict()):
+            index = attributes.index(result.keys()[0])
+            result = result[result.keys()[0]]
+            value = line[index]
+            if value in result.keys():
+                result = result[value]
             else:
-                result = "?"
+                result = "None"
                 break
-        if result == entry[-1]:
+        if result == line[-1]:
             rightCount += 1
-    print rightCount / count
+    print rightCount / len(testdata)
 
 def readCVS(url):
     file = open(url)
-    data = []
-    for line in file:
-        line = line.strip("\r\n")
-        data.append(line.split(',')[1:])
+    data = [line.strip("\r\n").split(',')[1:] for line in file]
     attributes = data[0]
     return data[1:], attributes
 
