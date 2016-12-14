@@ -1,36 +1,58 @@
 import DecisionTree
-import Node
 import NaiveBayes
-import SVM
+#import SVM
 from numpy import *
 
-TrainingDataNum = 28000
+TrainingDataNum = 20000
 TestDataNum = 2000
-Target = 'income'
+GoalAttr = 'income'
 
 
 def predicitions():
     """
     Decision Tree:
     """
+<<<<<<< HEAD
 
+=======
+    '''
+>>>>>>> origin/master
     data, attributes = DecisionTree.readCVS('AdultCensus_cleaned.csv')
     trainingdata, testdata = DecisionTree.splitData(data, TrainingDataNum, TestDataNum)
-    tree = DecisionTree.makeTree(trainingdata, attributes, Target, 0)
+    tree = DecisionTree.init(trainingdata, GoalAttr, attributes)
     print "generated decision tree"
     DecisionTree.predictions(testdata, tree, attributes)
 
-    table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned.csv', Target, TrainingDataNum, TestDataNum)
+    table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned.csv', GoalAttr, TrainingDataNum, TestDataNum)
     print "generate naive bayes table"
     NaiveBayes.predictions(table, testData, decisions)
+    '''
+    for i in range(6, 10):
+        print str(i) + ":"
+        data, attributes = DecisionTree.readCVS('AdultCensus_cleaned-' + str(i) + '.csv')
+        trainingdata, testdata = DecisionTree.splitData(data, TrainingDataNum, TestDataNum)
+        tree = DecisionTree.init(trainingdata, GoalAttr, attributes)
+        print "decision tree:"
+        DecisionTree.predictions(testdata, tree, attributes)
 
+<<<<<<< HEAD
 
     print "generate SVM"
     SVM.classify()
+=======
+        table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned-' + str(i) + '.csv', GoalAttr,
+                                                         TrainingDataNum, TestDataNum)
+        print "naive bayes:"
+        NaiveBayes.predictions(table, testData, decisions)
+>>>>>>> origin/master
 
+    print "generate SVM"
+ #   SVM.classify()
+'''
 import FPTreeBuilder
 import FPTreeMiner
-
+import time
+from apyori import apriori
 
 def associationAnalysis():
     transactions = [[]]
@@ -60,11 +82,18 @@ def associationAnalysis():
     targetItem1 = 'income:<=50K'
     targetItem2 = 'income:>50K'
 
-    print('Using FP-Growth algorithm to find the frequent pattern in given census:')
+    print('Using FP-Growth algorithm to find the frequent pattern in given census:(min_sup is 150 by default)')
+    start_timeFP = time.time()
     fpTreeBuilder = FPTreeBuilder.FPTreeBuilder(formedTransactions, min_sup, counts, headerTable)
     FPTreeMiner.FPTreeMiner(targetItem1, targetItem2, fpTreeBuilder.tree, min_sup, headerTable)
-
+    print("---FP-Growth using %s seconds ---" % (time.time() - start_timeFP))
+    
+    print('Using Apriori library to find the frequent pattern in given census:')
+    start_timeA = time.time()
+    aprioriResults = list(apriori(formedTransactions))
+    print("---Apriori using %s seconds ---" % (time.time() - start_timeA))
+'''
 
 if __name__ == '__main__':
     predicitions()
-    associationAnalysis()
+ #   associationAnalysis()

@@ -53,6 +53,14 @@ def DecisionTreeClean():
                      "income"]
     del frame['age']
     del frame['hoursperweek']
+    del frame['educationnum']
+    del frame["race"]
+    del frame["maritalstatus"]
+    del frame["nativecountry"]
+    del frame["agegroup"]
+    del frame["sex"]
+    del frame["hoursgroup"]
 
-    frame.to_csv("AdultCensus_cleaned.csv")
+
+    frame.to_csv("AdultCensus_cleaned-7.csv")
 DecisionTreeClean()
