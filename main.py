@@ -13,6 +13,7 @@ def predicitions():
     """
     Decision Tree:
     """
+
     data, attributes = DecisionTree.readCVS('AdultCensus_cleaned.csv')
     trainingdata, testdata = DecisionTree.splitData(data, TrainingDataNum, TestDataNum)
     tree = DecisionTree.makeTree(trainingdata, attributes, Target, 0)
@@ -22,6 +23,7 @@ def predicitions():
     table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned.csv', Target, TrainingDataNum, TestDataNum)
     print "generate naive bayes table"
     NaiveBayes.predictions(table, testData, decisions)
+
 
     print "generate SVM"
     SVM.classify()

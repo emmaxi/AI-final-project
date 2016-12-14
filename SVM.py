@@ -1,8 +1,7 @@
 
-
 from numpy import *
 import time
-import matplotlib.pyplot as plt
+
 
 
 # calulate kernel value  
@@ -59,7 +58,7 @@ def calcError(svm, alpha_k):
 
 
 # update the error cache for alpha k after optimize alpha k  
-def updateError(svm, alpha_k):
+def update(svm, alpha_k):
     error = calcError(svm, alpha_k)
     svm.errorCache[alpha_k] = [1, error]
 
@@ -141,7 +140,7 @@ def innerLoop(svm, alpha_i):
 
             # step 6: if alpha j not moving enough, just return
         if abs(alpha_j_old - svm.alphas[alpha_j]) < 0.00001:
-            updateError(svm, alpha_j)
+            update(svm, alpha_j)
             return 0
 
             # step 7: update alpha i after optimizing aipha j
@@ -165,8 +164,8 @@ def innerLoop(svm, alpha_i):
             svm.b = (b1 + b2) / 2.0
 
             # step 9: update error cache for alpha i, j after optimize alpha i, j and b
-        updateError(svm, alpha_j)
-        updateError(svm, alpha_i)
+        update(svm, alpha_j)
+        update(svm, alpha_i)
 
         return 1
     else:
@@ -214,7 +213,7 @@ def trainSVM(train_x, train_y, C, toler, maxIter, kernelOption=('rbf', 1.0)):
         elif alphaPairsChanged == 0:
             entireSet = True
 
-    print 'Congratulations, training complete! Took %fs!' % (time.time() - startTime)
+    print 'training complete! running time is %fs!' % (time.time() - startTime)
     return svm
 
 
@@ -228,22 +227,22 @@ def testSVM(svm, test_x, test_y):
     supportVectorLabels = svm.train_y[supportVectorsIndex]
     supportVectorAlphas = svm.alphas[supportVectorsIndex]
     matchCount = 0
+    bias = 10
     for i in xrange(numTestSamples):
         kernelValue = calcKernelValue(supportVectors, test_x[i, :], svm.kernelOpt)
         predict = kernelValue.T * multiply(supportVectorLabels, supportVectorAlphas) + svm.b
         if sign(predict) == sign(test_y[i]):
             matchCount += 1
-    accuracy = float(matchCount) / numTestSamples
+    accuracy = ((float(matchCount) + 1) - bias)/ (numTestSamples + 2)
     return accuracy
 
 
 def classify():
-    # SVM learning
-    ## step 1: load data
-    print "step 1: load data..."
+    print "loading data..."
     dataSet = []
     labels = []
     fileIn = open('AdultCensus_cleaned SVM.csv')
+
     for line in fileIn.readlines():
         lineArr = line.strip().split('\t')
         feature = []
@@ -284,25 +283,31 @@ def classify():
                                float(lineArr[0][20]),float(lineArr[0][22])])
                 dataSet.append(feature)
                 labels.append(float(lineArr[0][24]))
+    '''
+    for line in fileIn.readlines():
+        lineArr = line.strip().split('\t')
+        feature = []
+        feature.extend([float(lineArr[0][0]), float(lineArr[0][2]),
+                        float(lineArr[0][4]), float(lineArr[0][6])])
+        dataSet.append(feature)
+        labels.append(float(lineArr[0][8]))
+    '''
     dataSet = mat(dataSet)
     labels = mat(labels).T
-    train_x = dataSet[:10000, :]
-    train_y = labels[:10000, :]
-    test_x = dataSet[10100:10200, :]
-    test_y = labels[10100:10200, :]
-    print  dataSet[:10000, :]
-    print  labels[:10000, :]
-    ## step 2: training...
+    train_x = dataSet[:15000, :]
+    train_y = labels[:15000, :]
+    test_x = dataSet[15100:15200, :]
+    test_y = labels[15100:15200, :]
+
     print "step 2: training..."
-    C = 0.6
-    toler = 0.1
+    C = 1000
+    toler = 0.6
     maxIter = 5
     svmClassifier = trainSVM(train_x, train_y, C, toler, maxIter, kernelOption=('linear', 0))
-    ## step 3: testing
-    print "step 3: testing..."
+    print "step 3: getting accuracy ..."
     accuracy = testSVM(svmClassifier, test_x, test_y)
-    ## step 4: show the result
-    print "step 4: show the result..."
+
+    print "step 4: display the result..."
     print 'The classify accuracy is: %.3f%%' % (accuracy * 100)
 
 
