@@ -13,15 +13,32 @@ def predicitions():
     Decision Tree:
     """
 
-    data, attributes = DecisionTree.readCVS('AdultCensus_cleaned.csv')
-    trainingdata, testdata = DecisionTree.splitData(data, TrainingDataNum, TestDataNum)
-    tree = DecisionTree.init(trainingdata, GoalAttr, attributes)
-    print "generated decision tree"
-    DecisionTree.predictions(testdata, tree, attributes)
+    print "test different training set"
 
-    table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned.csv', GoalAttr, TrainingDataNum, TestDataNum)
-    print "generate naive bayes table"
-    NaiveBayes.predictions(table, testData, decisions)
+    for num in range(4000, 20001, 4000):
+        print 'dataset number:' + str(num)
+        data, attributes = DecisionTree.readCVS('AdultCensus_cleaned.csv')
+        print 'decision tree'
+        trainingdata, testdata = DecisionTree.splitData(data, num, TestDataNum)
+        tree = DecisionTree.init(trainingdata, GoalAttr, attributes)
+        DecisionTree.predictions(testdata, tree, attributes)
+        print 'naive bayes'
+        table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned.csv', GoalAttr, num,
+                                                         TestDataNum)
+        NaiveBayes.predictions(table, testData, decisions)
+    print "test different attributes"
+    for i in range(6, 10):
+        print str(i) + ":"
+        data, attributes = DecisionTree.readCVS('AdultCensus_cleaned-' + str(i) + '.csv')
+        trainingdata, testdata = DecisionTree.splitData(data, TrainingDataNum, TestDataNum)
+        tree = DecisionTree.init(trainingdata, GoalAttr, attributes)
+        print "decision tree:"
+        DecisionTree.predictions(testdata, tree, attributes)
+        print "naive bayes:"
+        table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned-' + str(i) + '.csv', GoalAttr, TrainingDataNum,
+                                                         TestDataNum)
+        NaiveBayes.predictions(table, testData, decisions)
+
     print "generate SVM"
     SVM.classify()
 
