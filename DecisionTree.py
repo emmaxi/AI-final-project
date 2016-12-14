@@ -92,6 +92,7 @@ def readCVS(url):
     attributes = data[0]
     return data[1:], attributes
 
+
 def splitData(data, trainNum,testNum):
     return data[0:trainNum],data[trainNum + 1: trainNum + testNum]
 
