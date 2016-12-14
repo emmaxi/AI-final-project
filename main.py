@@ -28,7 +28,7 @@ def predicitions():
 import FPTreeBuilder
 import FPTreeMiner
 import time
-# from apyori import apriori
+from apyori import apriori
 
 def associationAnalysis():
     transactions = [[]]
@@ -66,7 +66,7 @@ def associationAnalysis():
     
     print('Using Apriori library to find the frequent pattern in given census:')
     start_timeA = time.time()
- #   aprioriResults = list(apriori(formedTransactions))
+    aprioriResults = list(apriori(formedTransactions))
     print("---Apriori using %s seconds ---" % (time.time() - start_timeA))
 
 
