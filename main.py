@@ -1,6 +1,6 @@
 import DecisionTree
 import NaiveBayes
-#import SVM
+import SVM
 from numpy import *
 
 TrainingDataNum = 20000
@@ -12,11 +12,7 @@ def predicitions():
     """
     Decision Tree:
     """
-<<<<<<< HEAD
 
-=======
-    '''
->>>>>>> origin/master
     data, attributes = DecisionTree.readCVS('AdultCensus_cleaned.csv')
     trainingdata, testdata = DecisionTree.splitData(data, TrainingDataNum, TestDataNum)
     tree = DecisionTree.init(trainingdata, GoalAttr, attributes)
@@ -26,33 +22,13 @@ def predicitions():
     table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned.csv', GoalAttr, TrainingDataNum, TestDataNum)
     print "generate naive bayes table"
     NaiveBayes.predictions(table, testData, decisions)
-    '''
-    for i in range(6, 10):
-        print str(i) + ":"
-        data, attributes = DecisionTree.readCVS('AdultCensus_cleaned-' + str(i) + '.csv')
-        trainingdata, testdata = DecisionTree.splitData(data, TrainingDataNum, TestDataNum)
-        tree = DecisionTree.init(trainingdata, GoalAttr, attributes)
-        print "decision tree:"
-        DecisionTree.predictions(testdata, tree, attributes)
-
-<<<<<<< HEAD
-
     print "generate SVM"
     SVM.classify()
-=======
-        table, decisions, testData = NaiveBayes.training('AdultCensus_cleaned-' + str(i) + '.csv', GoalAttr,
-                                                         TrainingDataNum, TestDataNum)
-        print "naive bayes:"
-        NaiveBayes.predictions(table, testData, decisions)
->>>>>>> origin/master
 
-    print "generate SVM"
- #   SVM.classify()
-'''
 import FPTreeBuilder
 import FPTreeMiner
 import time
-from apyori import apriori
+# from apyori import apriori
 
 def associationAnalysis():
     transactions = [[]]
@@ -90,10 +66,10 @@ def associationAnalysis():
     
     print('Using Apriori library to find the frequent pattern in given census:')
     start_timeA = time.time()
-    aprioriResults = list(apriori(formedTransactions))
+ #   aprioriResults = list(apriori(formedTransactions))
     print("---Apriori using %s seconds ---" % (time.time() - start_timeA))
-'''
+
 
 if __name__ == '__main__':
     predicitions()
- #   associationAnalysis()
+    associationAnalysis()
